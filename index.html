@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Указатели пути | Указатели</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Comic Neue', 'Comic Sans MS', sans-serif;
+            background: #fdf8e7;
+            background-image: radial-gradient(circle at 10% 20%, rgba(218, 178, 115, 0.08) 0%, rgba(0,0,0,0) 50%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .app-container {
+            max-width: 800px;
+            width: 100%;
+            background: #fff6e8;
+            border-radius: 48px;
+            box-shadow: 0 20px 35px rgba(100, 70, 30, 0.15);
+            padding: 30px 30px 40px;
+            border: 1px solid #f0dbb4;
+            text-align: center;
+        }
+
+        .header {
+            margin-bottom: 20px;
+        }
+
+        .header .studio-link {
+            display: inline-block;
+            font-size: 1rem;
+            color: #4A90D9;
+            text-decoration: none;
+            font-weight: 500;
+            border-bottom: 1px solid #4A90D9;
+            padding-bottom: 2px;
+            transition: 0.2s;
+        }
+
+        .header .studio-link:hover {
+            color: #2c6aa0;
+            border-bottom-color: #2c6aa0;
+        }
+
+        .header h1 {
+            font-size: 2.2rem;
+            color: #4a3520;
+            margin-top: 8px;
+            margin-bottom: 4px;
+            letter-spacing: 1px;
+        }
+
+        .header .subtitle {
+            font-size: 1rem;
+            color: #7a5a3a;
+            font-weight: 300;
+            line-height: 1.5;
+        }
+
+        .screen {
+            display: none;
+            margin-top: 20px;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        .intro-text {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #3e2c1a;
+            margin: 20px 0;
+            padding: 20px;
+            background: #ffffff;
+            border-radius: 20px;
+            border: 1px solid #e6dacb;
+        }
+
+        .intro-text .highlight {
+            color: #b48a62;
+            font-weight: 600;
+        }
+
+        .path {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            margin: 20px 0;
+            padding: 20px 10px;
+            background: #ffffff;
+            border-radius: 30px;
+            border: 1px solid #e6dacb;
+            position: relative;
+        }
+
+        .path::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 20px;
+            bottom: 20px;
+            width: 4px;
+            background: #d5c4b0;
+            border-radius: 2px;
+            transform: translateX(-50%);
+            z-index: 0;
+        }
+
+        .step {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            width: 100%;
+            max-width: 400px;
+            padding: 14px 18px;
+            background: #f4ede4;
+            border-radius: 60px;
+            cursor: pointer;
+            transition: 0.3s ease;
+            border: 2px solid transparent;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+
+        .step:hover {
+            transform: scale(1.02);
+            border-color: #c4a88a;
+            background: #efe5d8;
+        }
+
+        .step .step-number {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #b48a62;
+            min-width: 32px;
+            text-align: center;
+        }
+
+        .step .step-word {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #4a3520;
+            flex: 1;
+            text-align: left;
+        }
+
+        .step .step-icon {
+            font-size: 1.4rem;
+        }
+
+        .step.completed {
+            background: #c8e6c9;
+            border-color: #4CAF50;
+            opacity: 0.8;
+            cursor: default;
+        }
+
+        .step.completed:hover {
+            transform: none;
+            border-color: #4CAF50;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(30, 20, 10, 0.7);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #fffcf5;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            border-radius: 32px;
+            padding: 35px 30px 30px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+            position: relative;
+            border: 1px solid #e6dacb;
+            text-align: left;
+        }
+
+        .modal-content .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 2.2rem;
+            line-height: 1;
+            color: #b48a62;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 0 8px;
+            transition: 0.2s;
+        }
+
+        .modal-content .close-btn:hover {
+            color: #7a5a3a;
+            transform: scale(1.1);
+        }
+
+        .modal-content .modal-ref {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #b48a62;
+            margin-bottom: 6px;
+        }
+
+        .modal-content .modal-verse {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #3e2c1a;
+            font-style: italic;
+            padding: 15px 0;
+            border-bottom: 1px solid #f0e6d8;
+            margin-bottom: 15px;
+        }
+
+        .modal-content .modal-meaning {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: #3e2c1a;
+            padding: 10px 0;
+        }
+
+        .modal-content .modal-meaning strong {
+            color: #b48a62;
+        }
+
+        .modal-content .modal-encourage {
+            margin-top: 15px;
+            padding: 15px;
+            background: #f4ede4;
+            border-radius: 16px;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: #4a3520;
+        }
+
+        .finish-box {
+            background: #ffffff;
+            border-radius: 30px;
+            padding: 30px 25px;
+            border: 1px solid #e6dacb;
+            margin: 20px 0;
+        }
+
+        .finish-box h2 {
+            font-size: 1.8rem;
+            color: #4a3520;
+            margin-bottom: 15px;
+        }
+
+        .finish-box p {
+            font-size: 1.05rem;
+            line-height: 1.7;
+            color: #3e2c1a;
+        }
+
+        .finish-box .final-verse {
+            font-style: italic;
+            font-size: 1.1rem;
+            color: #b48a62;
+            margin: 15px 0;
+            padding: 15px;
+            background: #f4ede4;
+            border-radius: 16px;
+        }
+
+        button {
+            background: #b48a62;
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            border-radius: 40px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            margin-top: 10px;
+            width: 100%;
+            max-width: 300px;
+        }
+
+        button:hover {
+            background: #9a704a;
+            transform: translateY(-2px);
+        }
+
+        button.secondary {
+            background: #e6dacb;
+            color: #4a3520;
+        }
+
+        button.secondary:hover {
+            background: #d5c4b0;
+        }
+
+        .footer {
+            margin-top: 30px;
+            border-top: 1px solid #e6dacb;
+            padding-top: 20px;
+            text-align: center;
+        }
+
+        .footer .studio-link {
+            color: #4A90D9;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            border-bottom: 1px solid #4A90D9;
+            padding-bottom: 2px;
+            transition: 0.2s;
+        }
+
+        .footer .studio-link:hover {
+            color: #2c6aa0;
+            border-bottom-color: #2c6aa0;
+        }
+
+        .footer .small-note {
+            display: block;
+            margin-top: 6px;
+            color: #a58d7a;
+            font-size: 0.8rem;
+        }
+
+        @media (max-width: 600px) {
+            .app-container { padding: 20px 15px; }
+            .header h1 { font-size: 1.8rem; }
+            .step { padding: 12px 14px; gap: 10px; }
+            .step .step-word { font-size: 0.9rem; }
+            .modal-content { padding: 25px 20px; }
+            .modal-content .modal-ref { font-size: 1.3rem; }
+            .modal-content .modal-verse { font-size: 1rem; }
+            .finish-box h2 { font-size: 1.5rem; }
+            button { padding: 12px 20px; font-size: 1rem; max-width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="header">
+            <a href="https://vk.com/ykazateli_of_christ" target="_blank" class="studio-link">
+                🕯️ Библейская студия анимации «Указатели»
+            </a>
+            <h1>🧭 Указатели пути</h1>
+            <p class="subtitle">Найди направление в Слове Божьем</p>
+        </div>
+
+        <div id="screen1" class="screen active">
+            <div class="intro-text">
+                Порой мы оказываемся на распутье.<br>
+                Трудности, вопросы, неизвестность…<br><br>
+                <span class="highlight">Кто укажет нам путь?</span><br>
+                Бог говорит с нами через Своё Слово.<br>
+                Он ждёт, чтобы направить нас.
+            </div>
+            <button onclick="startGame()">🛤️ Начать путь</button>
+        </div>
+
+        <div id="screen2" class="screen">
+            <p style="color: #7a5a3a; margin-bottom: 10px;">
+                📖 Нажимай на шаг, чтобы открыть стих-указатель
+            </p>
+            <div class="path" id="pathContainer">
+            </div>
+            <button class="secondary" onclick="finishGame()" id="finishBtn" style="display: none;">
+                🏁 Пройти до конца
+            </button>
+        </div>
+
+        <div id="screen3" class="screen">
+            <div class="finish-box">
+                <h2>🏁 Путь пройден</h2>
+                <p>
+                    Бог не оставляет нас без направления.<br>
+                    В Его Слове — каждый ответ.
+                </p>
+                <div class="final-verse">
+                    «Наставлю тебя, направлю тебя на путь, по которому тебе идти; буду руководить тебя, око Моё над тобою»<br>
+                    <span style="font-style: normal; font-weight: 600; color: #4a3520;">— Псалом 31:8</span>
+                </div>
+                <p style="font-size: 0.95rem; color: #7a5a3a; margin-top: 10px;">
+                    Доверься Ему, и Он укажет тебе путь.
+                </p>
+            </div>
+            <button onclick="resetGame()">🔄 Пройти заново</button>
+        </div>
+
+        <div class="modal" id="verseModal">
+            <div class="modal-content">
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+                <div id="modalBody">
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <a href="https://vk.com/ykazateli_of_christ" target="_blank" class="studio-link">
+                🕯️ Ищите путь вместе с «Указателями»
+            </a>
+            <span class="small-note">Слово Божье — светильник ноге моей</span>
+        </div>
+    </div>
+
+    <script>
+        const stepsData = [
+            {
+                id: 1,
+                word: "Наставлю",
+                icon: "🧭",
+                ref: "Псалом 31:8",
+                verse: "«Наставлю тебя, направлю тебя на путь, по которому тебе идти; буду руководить тебя, око Моё над тобою»",
+                meaning: "Бог обещает лично наставлять тебя. Ты не один — Он смотрит на тебя с заботой и любовью.",
+                encourage: "Доверься Его руководству. Он знает, куда ведёт тебя."
+            },
+            {
+                id: 2,
+                word: "Укажет",
+                icon: "➡️",
+                ref: "Псалом 24:12",
+                verse: "«Кто есть человек, боящийся Господа? Ему укажет Он путь, который избрать»",
+                meaning: "Бог показывает путь тем, кто боится Его и ищет Его воли. Твой страх перед Ним — ключ к мудрости.",
+                encourage: "Не бойся просить — Он обязательно укажет направление."
+            },
+            {
+                id: 3,
+                word: "Направит",
+                icon: "📜",
+                ref: "Притчи 3:5-6",
+                verse: "«Надейся на Господа всем сердцем твоим, и не полагайся на разум твой. Во всех путях твоих познавай Его, и Он направит стези твои»",
+                meaning: "Главный принцип: доверие Богу, а не собственному уму. Тогда Он Сам будет направлять твои шаги.",
+                encourage: "Оставь свои планы в Его руках — Он сделает путь прямым."
+            },
+            {
+                id: 4,
+                word: "Добрый путь",
+                icon: "🌿",
+                ref: "2 Паралипоменон 6:27",
+                verse: "«Укажи добрый путь, по которому идти им»",
+                meaning: "Мы можем просить Бога о благих путях. Он не ведёт к погибели, а к жизни и благословению.",
+                encourage: "Проси о добром пути — и Он даст его."
+            },
+            {
+                id: 5,
+                word: "Поведу",
+                icon: "🌅",
+                ref: "Исаия 42:16",
+                verse: "«Поведу их путями, которых они не знали; приведу их по дорогам, которых они не ведали»",
+                meaning: "Бог часто ведёт нас туда, где мы никогда не были. Он открывает новые пути, даже когда мы не видим их.",
+                encourage: "Доверяй, даже если ты не знаешь дороги. Он поведёт тебя."
+            },
+            {
+                id: 6,
+                word: "Я есмь путь",
+                icon: "✝️",
+                ref: "Иоанна 14:6",
+                verse: "«Иисус сказал ему: Я есмь путь и истина и жизнь; никто не приходит к Отцу, как только через Меня»",
+                meaning: "Христос — не просто указатель, Он Сам есть Путь. Идя за Ним, ты не собьёшься.",
+                encourage: "Иди за Иисусом — Он выведет тебя к Отцу."
+            },
+            {
+                id: 7,
+                word: "Укажу, что делать",
+                icon: "🕊️",
+                ref: "1 Царств 16:3",
+                verse: "«Я укажу тебе, что делать»",
+                meaning: "Бог не оставляет нас в неведении. Он даёт конкретные указания в нужное время.",
+                encourage: "Продолжай искать — и ты увидишь Его руку."
+            }
+        ];
+
+        let completedSteps = [];
+
+        function renderSteps() {
+            const container = document.getElementById('pathContainer');
+            container.innerHTML = '';
+            stepsData.forEach((step) => {
+                const isCompleted = completedSteps.includes(step.id);
+                const stepDiv = document.createElement('div');
+                stepDiv.className = `step ${isCompleted ? 'completed' : ''}`;
+                stepDiv.innerHTML = `
+                    <span class="step-number">${step.id}</span>
+                    <span class="step-word">${step.word}</span>
+                    <span class="step-icon">${step.icon}</span>
+                `;
+                if (!isCompleted) {
+                    stepDiv.addEventListener('click', () => openStep(step.id));
+                }
+                container.appendChild(stepDiv);
+            });
+
+            if (completedSteps.length === stepsData.length) {
+                document.getElementById('finishBtn').style.display = 'block';
+            } else {
+                document.getElementById('finishBtn').style.display = 'none';
+            }
+        }
+
+        function openStep(id) {
+            const step = stepsData.find(s => s.id === id);
+            if (!step) return;
+
+            if (!completedSteps.includes(id)) {
+                completedSteps.push(id);
+            }
+
+            const modalBody = document.getElementById('modalBody');
+            modalBody.innerHTML = `
+                <div class="modal-ref">${step.ref}</div>
+                <div class="modal-verse">${step.verse}</div>
+                <div class="modal-meaning">
+                    <strong>📖 Смысл:</strong> ${step.meaning}
+                </div>
+                <div class="modal-encourage">
+                    <strong>🕯️ Ободрение:</strong> ${step.encourage}
+                </div>
+            `;
+            document.getElementById('verseModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+            renderSteps();
+        }
+
+        function closeModal() {
+            document.getElementById('verseModal').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        document.getElementById('verseModal').addEventListener('click', function(e) {
+            if (e.target === this) closeModal();
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeModal();
+        });
+
+        function showScreen(number) {
+            document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
+            document.getElementById('screen' + number).classList.add('active');
+            document.querySelector('.app-container').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function startGame() {
+            completedSteps = [];
+            renderSteps();
+            showScreen(2);
+        }
+
+        function finishGame() {
+            if (completedSteps.length < stepsData.length) {
+                alert('Пройди все шаги, чтобы увидеть финиш.');
+                return;
+            }
+            showScreen(3);
+        }
+
+        function resetGame() {
+            completedSteps = [];
+            renderSteps();
+            showScreen(1);
+        }
+
+        renderSteps();
+    </script>
+</body>
+</html>
