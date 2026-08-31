@@ -175,6 +175,7 @@
             border-color: #4CAF50;
         }
 
+        /* ===== МОДАЛЬНОЕ ОКНО (исправленное) ===== */
         .modal {
             display: none;
             position: fixed;
@@ -201,7 +202,7 @@
             max-height: 90vh;
             overflow-y: auto;
             border-radius: 32px;
-            padding: 35px 30px 30px;
+            padding: 35px 45px 30px 30px;
             box-shadow: 0 30px 60px rgba(0,0,0,0.3);
             position: relative;
             border: 1px solid #e6dacb;
@@ -211,14 +212,14 @@
         .modal-content .close-btn {
             position: absolute;
             top: 12px;
-            right: 16px;
+            right: 12px;
             font-size: 2.2rem;
             line-height: 1;
             color: #b48a62;
             cursor: pointer;
             background: none;
             border: none;
-            padding: 0 6px;
+            padding: 4px 8px;
             transition: 0.2s;
             z-index: 10;
         }
@@ -233,7 +234,7 @@
             font-weight: 700;
             color: #b48a62;
             margin-bottom: 6px;
-            padding-right: 20px;
+            padding-right: 30px;
         }
 
         .modal-content .modal-verse {
@@ -241,18 +242,16 @@
             line-height: 1.8;
             color: #3e2c1a;
             font-style: italic;
-            padding: 15px 0;
+            padding: 15px 30px 15px 0;
             border-bottom: 1px solid #f0e6d8;
             margin-bottom: 15px;
-            padding-right: 20px;
         }
 
         .modal-content .modal-meaning {
             font-size: 1rem;
             line-height: 1.6;
             color: #3e2c1a;
-            padding: 10px 0;
-            padding-right: 20px;
+            padding: 10px 30px 10px 0;
         }
 
         .modal-content .modal-meaning strong {
@@ -261,13 +260,12 @@
 
         .modal-content .modal-encourage {
             margin-top: 15px;
-            padding: 15px;
+            padding: 15px 30px 15px 15px;
             background: #f4ede4;
             border-radius: 16px;
             font-size: 0.95rem;
             line-height: 1.6;
             color: #4a3520;
-            padding-right: 20px;
         }
 
         .finish-box {
@@ -363,12 +361,29 @@
             .header h1 { font-size: 1.8rem; }
             .step { padding: 12px 14px; gap: 10px; }
             .step .step-word { font-size: 0.9rem; }
-            .modal-content { padding: 25px 16px; }
-            .modal-content .close-btn { top: 10px; right: 12px; font-size: 1.8rem; }
-            .modal-content .modal-ref { font-size: 1.3rem; padding-right: 12px; }
-            .modal-content .modal-verse { font-size: 1rem; padding-right: 12px; }
-            .modal-content .modal-meaning { padding-right: 12px; }
-            .modal-content .modal-encourage { padding-right: 12px; }
+            .modal-content {
+                padding: 25px 40px 20px 16px;
+            }
+            .modal-content .close-btn {
+                top: 8px;
+                right: 8px;
+                font-size: 1.8rem;
+                padding: 2px 6px;
+            }
+            .modal-content .modal-ref {
+                font-size: 1.3rem;
+                padding-right: 20px;
+            }
+            .modal-content .modal-verse {
+                font-size: 1rem;
+                padding-right: 20px;
+            }
+            .modal-content .modal-meaning {
+                padding-right: 20px;
+            }
+            .modal-content .modal-encourage {
+                padding-right: 20px;
+            }
             .finish-box h2 { font-size: 1.5rem; }
             button { padding: 12px 20px; font-size: 1rem; max-width: 100%; }
         }
